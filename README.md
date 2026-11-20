@@ -14,6 +14,19 @@ python tools/forhandsvis.py
 
 På GitHub Pages er prosjektstien `/fag-side/`. Ved eventuell artefaktpublisering skal rotens `index.html` og mappen `visdat/` inngå. Ved Jekyll-publisering fra gren angir `_config.yml` unntakene for privat materiale. Den eksisterende Git-regelen for `kildemateriale/` og de nye reglene for lokale grafresultater beskytter arbeidskopien.
 
+## Publisering på GitHub Pages
+
+Workflowen `.github/workflows/pages.yml` bygger og publiserer Pages-artifakten ved
+push til `main`, eller manuelt fra Actions. Den kopierer bare rotens
+`index.html`, nettstedfilene under `visdat/` og det offentlige registeret og
+analysen under `visdat/kilder/`. Kildemateriale, original-PDF-er,
+`graphify-out/` og komplette tekstuttrekk blir ikke med i artifakten.
+
+Aktiver Pages én gang i repository settings: velg **Settings → Pages → Source:
+GitHub Actions**. Siden får prosjektadressen
+`https://<bruker>.github.io/fag-side/`; nettstedets relative lenker er laget for
+denne stien.
+
 ## Læringssti og eksamensbelegg
 
 Start med geometriske transformasjoner. Prøv å bytte rekkefølge på flytting og rotasjon, løs oppgaven uten hint og gå videre til en registrert eksamensdel. Lenken «Les forklaringen» går til avsnittet om metoden. Derfra kan du gå tilbake til den valgte oppgaven.

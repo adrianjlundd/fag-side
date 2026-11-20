@@ -2,6 +2,9 @@
 
 20. november 2026. Studiesiden, kildearbeidet og den lokale Graphify-integrasjonen er ferdige.
 
+- GitHub Pages-oppsett er klargjort i `.github/workflows/pages.yml`. Workflowen
+  bygger en eksplisitt offentlig artefakt med rotens inngang og `visdat/`, uten
+  kildemateriale, original-PDF-er, Graphify-filer eller komplette uttrekk.
 - 44 lokale fagfiler er gjennomgått. Begge planer, kursinformasjonen, alle fire eksamens-PDF-ene, CGVIZ, Gonzalez og DL-eksemplene inngår. README.md skiller sideindeksering, faglig nærlesing og kildehull.
 - visdat/ inneholder 15 kapitler, begrepsoppslag, interaktive figurer og eksamenstrening. visdat/kilder/eksamensanalyse.md og eksamen.json dokumenterer 55 fagoppgaver og 134 stabile del-ID-er. H24 nr. 3 og H25 nr. 2 og 13 krever særlig kildekritikk. 13 deloppføringer har tomt originalt svarfelt.
 - AGENTS.md, .gitignore, .graphifyignore, _config.yml, rotens index.html og tools/forhandsvis.py gir konvensjoner, beskyttelse av privat materiale og lokal forhåndsvisning. Alle arbeidsfiler til grafen er private under graphify-out/.
