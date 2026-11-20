@@ -1,0 +1,4 @@
+# Behold den private pensummappen når Graphify leser Git-reglene.
+!/kildemateriale/
+!/kildemateriale/**
+

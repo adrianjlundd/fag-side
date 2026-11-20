@@ -1,0 +1,9 @@
+exclude:
+  - kildemateriale
+  - graphify-out
+  - referanser
+  - AGENTS.md
+  - PROGRESS.md
+  - README.md
+  - tools
+
