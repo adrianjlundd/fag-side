@@ -868,3 +868,22 @@ summary {
 .weights span:last-child {
   background: #d8e99d;
 }
+
+.worked-example {
+  margin: 1.25rem 0;
+  padding: 0.25rem 1rem 1rem;
+  border-inline-start: 3px solid var(--green);
+  background: var(--soft);
+}
+.calculation {
+  margin-block: 0.75rem;
+  padding: 0.7rem;
+  background: var(--paper);
+  font-variant-numeric: tabular-nums;
+  overflow-x: auto;
+}
+.reading math[display="block"] { margin-block: 0.75rem; }
+.pixel-row { display: flex; flex-wrap: wrap; gap: .2rem; margin: .75rem 0; }
+.pixel-row button { min-width: 2rem; min-height: 2.4rem; border: 1px solid var(--green); border-radius: .2rem; color: var(--ink); background: var(--paper); }
+.pixel-row button[aria-pressed="true"] { background: var(--deep); color: white; }
+.sjekk { margin-block: 1rem; }

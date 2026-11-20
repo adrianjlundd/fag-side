@@ -259,6 +259,45 @@
     slider.addEventListener("input", update);
     update();
   }
+  function morphology(widget) {
+    const pixels = [0, 1, 1, 1, 0, 1, 0];
+    widget.innerHTML = '<h3>Test et asymmetrisk strukturelement</h3>' +
+      '<p>Endre inngangsraden ved å trykke på pikslene. Indeksene går fra 0 til 6. ' +
+      'Elementet B = {0, 1} er forankret til venstre, og utenfor raden er verdien null.</p>' +
+      '<div class="pixel-row" aria-label="Inngang"></div>' +
+      '<label>Operasjon <select><option value="erosion">Erosjon</option>' +
+      '<option value="dilation">Dilasjon</option></select></label>' +
+      '<p>Forutsi hvilke posisjoner som blir 1, og åpne resultatet.</p>' +
+      '<details><summary>Se resultat</summary><output aria-live="polite"></output></details>';
+    const input = widget.querySelector(".pixel-row");
+    const operation = widget.querySelector("select");
+    function update() {
+      const erosion = operation.value === "erosion";
+      const result = pixels.map((value, index) => erosion
+        ? Math.min(value, pixels[index + 1] ?? 0)
+        : Math.max(value, pixels[index - 1] ?? 0));
+      widget.querySelector("output").textContent = result.join("  ") + (erosion
+        ? " · Ved i må både i og i + 1 være på."
+        : " · Ved i holder det med forgrunn i i eller i − 1.");
+      widget.querySelector("details").open = false;
+    }
+    pixels.forEach((value, index) => {
+      const cell = document.createElement("button");
+      cell.type = "button";
+      cell.textContent = value;
+      cell.setAttribute("aria-label", "Inngangspiksel " + index);
+      cell.setAttribute("aria-pressed", Boolean(value));
+      cell.onclick = () => {
+        pixels[index] = 1 - pixels[index];
+        cell.textContent = pixels[index];
+        cell.setAttribute("aria-pressed", Boolean(pixels[index]));
+        update();
+      };
+      input.append(cell);
+    });
+    operation.addEventListener("change", update);
+    update();
+  }
   window.visdatFigures = () => {
     heightfield();
     document.querySelectorAll("canvas[data-track]").forEach(thumbnail);
@@ -266,6 +305,7 @@
       widget.classList.add("widget");
       if (widget.dataset.demo === "transformasjon") transform(widget);
       if (widget.dataset.demo === "filter") filter(widget);
+      if (widget.dataset.demo === "morfologi") morphology(widget);
       if (widget.dataset.demo === "oppmerksomhet") attention(widget);
     });
   };

@@ -137,6 +137,27 @@
     }
     const index = chapters.indexOf(ch),
       group = cg.includes(ch) ? "Computer Graphics" : "Image Processing";
+    const foundations = {
+      scenegrafer: ["transformasjoner", "rekkefolge"],
+      kamera: ["scenegrafer", "referanse"],
+      klipping: ["kamera", "perspektiv"],
+      rasterisering: ["klipping", "polygon"],
+      farge: ["intensitet", "bildedannelse"],
+      lys: ["farge", "modeller"],
+      filtrering: ["intensitet", "punktoperator"],
+      frekvens: ["filtrering", "kjerne"],
+      segmentering: ["filtrering", "derivasjon"],
+      morfologi: ["segmentering", "regionvekst"],
+      "nevrale-nett": ["intensitet", "bildedannelse"],
+      cnn: ["nevrale-nett", "forover"],
+      transformer: ["nevrale-nett", "forover"],
+    };
+    const required = foundations[ch.slug];
+    const foundation = required && topics.get(required[0]);
+    const preparation = foundation
+      ? '<p>Forkunnskap: <a href="' + topicLink(foundation, required[1]) + '">' +
+        escape(foundation.sections.find(section => section.id === required[1]).title) + '</a>.</p>'
+      : "";
     document.title = ch.title + " · Visdat TDT4195";
     const sections = ch.sections
       .map(
@@ -162,7 +183,7 @@
       header(group, ch.title, ch.intro) +
       '<div class="layout"><div class="reading"><section id="fokus" class="focus"><h2>Eksamensfokus</h2><ul>' +
       ch.focus.map((f) => "<li>" + escape(f) + "</li>").join("") +
-      "</ul></section>" +
+      "</ul>" + preparation + "</section>" +
       sections +
       '<section id="eksamensoppgaver"><h2>Tidligere oppgaver</h2><div id="exam-refs" aria-live="polite">Henter oppgavereferanser …</div></section>' +
       '<section class="exercise" id="prov"><p class="eyebrow">NY TRENINGSOPPGAVE</p><h2>Prøv selv</h2><div>' +
@@ -202,6 +223,15 @@
     loadExam()
       .then((rows) => {
         const selected = rows.filter((row) => row.kapittel === ch.slug);
+        for (const section of ch.sections) {
+          const related = selected.filter(row => row.anker === section.id);
+          if (!related.length) continue;
+          const links = related.map(row => '<a href="' + examLink(row) + '">' +
+            escape(row.id) + '</a>').join(" · ");
+          document.getElementById(section.id).insertAdjacentHTML("beforeend",
+            '<details><summary>Tren med tidligere eksamensoppgaver (' +
+            related.length + ')</summary><p>' + links + '</p></details>');
+        }
         refs.innerHTML = selected.length
           ? "<ul>" +
             selected
@@ -524,7 +554,7 @@
       source(
         "lecture_plan_IP.txt · «Link between lecture slides and the relevant books»",
       ) +
-      '<h2>Grunnlaget for oppgavene</h2><p>Årgangene 2024 og 2025 har hver en NoAnswers-fil og en svarfil. Kildene er angitt med PDF-side og oppgavenummer i treningen. Egne oppgaver bruker nye tall og egne forklaringer. Vektingen av temaer for H26 er en faglig vurdering.</p><ul><li><a href="kilder/eksamensanalyse.md">Les eksamensanalysen (Markdown)</a></li><li><a href="kilder/eksamen.json">Åpne oppgaveregisteret (JSON)</a></li></ul></div>';
+      '<h2>Grunnlaget for oppgavene</h2><p>Årgangene 2024 og 2025 har hver en NoAnswers-fil og en svarfil. Kildene er angitt med PDF-side og oppgavenummer i treningen. Egne oppgaver bruker nye tall og egne forklaringer. Vektingen av temaer for H26 er en faglig vurdering.</p><ul><li><a href="kilder/eksamensanalyse.md">Les eksamensanalysen (Markdown)</a></li><li><a href="kilder/pensumdekning.md">Pensumdekning og læringsmål (Markdown)</a></li><li><a href="kilder/eksamen.json">Åpne oppgaveregisteret (JSON)</a></li></ul></div>';
   }
   if (page === "home")
     document.querySelector("#tracks").innerHTML =

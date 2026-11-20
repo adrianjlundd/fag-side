@@ -19,7 +19,7 @@ På GitHub Pages er prosjektstien `/fag-side/`. Ved eventuell artefaktpubliserin
 Workflowen `.github/workflows/pages.yml` bygger og publiserer Pages-artifakten ved
 push til `main`, eller manuelt fra Actions. Den kopierer bare rotens
 `index.html`, nettstedfilene under `visdat/` og det offentlige registeret og
-analysen under `visdat/kilder/`. Kildemateriale, original-PDF-er,
+analysen og pensumkartet under `visdat/kilder/`. Kildemateriale, original-PDF-er,
 `graphify-out/` og komplette tekstuttrekk blir ikke med i artifakten.
 Build-jobben konfigurerer først Pages-tilkoblingen eksplisitt.
 
@@ -29,6 +29,10 @@ GitHub Actions**. Siden får prosjektadressen
 denne stien.
 
 ## Læringssti og eksamensbelegg
+
+De 15 kapitlene har 73 leksjonsavsnitt. Hvert avsnitt kombinerer en forklart metode med grunnøving og en selvstendig anvendelse med skjult løsning. Prøv først uten hint, og bruk deretter mellomregningen til å finne det første steget der din løsning avviker. Hvert kapittel har også et regneeksempel på engelsk. Matematiske uttrykk som matriser, summer og brøker vises med nettleserens innebygde MathML.
+
+[Pensumkartet](visdat/kilder/pensumdekning.md) knytter ferdighetene til avsnitt og kildesider. Her står også hvilke praktiske læringsmål som krever laboratoriearbeid, og hvilke forelesninger som mangler eget kildemateriale.
 
 Start med geometriske transformasjoner. Prøv å bytte rekkefølge på flytting og rotasjon, løs oppgaven uten hint og gå videre til en registrert eksamensdel. Lenken «Les forklaringen» går til avsnittet om metoden. Derfra kan du gå tilbake til den valgte oppgaven.
 
