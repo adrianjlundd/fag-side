@@ -21,6 +21,7 @@ push til `main`, eller manuelt fra Actions. Den kopierer bare rotens
 `index.html`, nettstedfilene under `visdat/` og det offentlige registeret og
 analysen under `visdat/kilder/`. Kildemateriale, original-PDF-er,
 `graphify-out/` og komplette tekstuttrekk blir ikke med i artifakten.
+Build-jobben konfigurerer først Pages-tilkoblingen eksplisitt.
 
 Aktiver Pages én gang i repository settings: velg **Settings → Pages → Source:
 GitHub Actions**. Siden får prosjektadressen
