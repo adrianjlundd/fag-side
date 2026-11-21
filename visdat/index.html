@@ -1,105 +1,72 @@
-<!doctype html>
-<html lang="nb">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#102e30" />
-    <title>Grunnleggende visuell databehandling · Visdat TDT4195</title>
-    <link rel="stylesheet" href="stil.css" />
-    <script defer src="cg.js"></script>
-    <script defer src="ip.js"></script>
-    <script defer src="figurer.js"></script>
-    <script defer src="side.js"></script>
-  </head>
-  <body data-page="home">
-    <a class="skip" href="#innhold">Hopp til innhold</a>
-    <header class="mast">
-      <div class="shell mast-inner">
-        <a class="brand" href="./" aria-label="Visdat, fagforsiden"
-          ><span class="brandmark" aria-hidden="true"
-            ><i></i><i></i><i></i><i></i></span
-          >Visdat</a
-        ><span class="brand-code">TDT4195</span>
-        <nav aria-label="Hovedmeny">
-          <a href="./#pensum">Pensum</a
-          ><a href="eksamen.html">Eksamenstrening</a
-          ><a href="begreper.html">Begreper</a>
-        </nav>
-      </div>
-    </header>
-    <main class="shell" id="innhold">
-      <section class="hero">
-        <div class="hero-copy">
-          <p class="eyebrow">
-            <span class="signal"></span> NTNU &nbsp;/&nbsp; HØST 2026
-          </p>
-          <h1>Grunnleggende<br />visuell<br /><em>databehandling</em></h1>
-          <p class="lede">
-            Fra geometri til piksler, fra piksler til mening. Lær pensum steg
-            for steg og prøv metodene på eksamensoppgaver.
-          </p>
-          <div class="actions">
-            <a class="button primary" href="tema.html?k=transformasjoner"
-              >Start læringsstien</a
-            ><a class="button" href="eksamen.html">Eksamenstrening</a>
-          </div>
-        </div>
-        <figure class="surface">
-          <div class="instrument-title">
-            <span>HØYDEFELT</span><span>z = f(x, y)</span>
-          </div>
-          <canvas
-            id="heightfield"
-            width="720"
-            height="430"
-            role="img"
-            aria-label="Et høydefelt av punkter og trekanter. Flere prøver viser terrenget mer detaljert."
-          ></canvas>
-          <figcaption>
-            <label for="sampler">Prøvetetthet</label
-            ><input
-              id="sampler"
-              type="range"
-              min="8"
-              max="44"
-              value="30"
-            /><output for="sampler" id="samplevalue">30 × 30</output>
-          </figcaption>
-        </figure>
-      </section>
-      <section id="pensum" class="curriculum">
-        <div class="section-head">
-          <div>
-            <p class="eyebrow">LÆRINGSSTIEN</p>
-            <h2>Pensum i to deler</h2>
-          </div>
-          <p>Velg et tema eller følg kapitlene i rekkefølge.</p>
-        </div>
-        <div class="tracks" id="tracks"></div>
-      </section>
-      <section class="exam-callout">
-        <div>
-          <p class="eyebrow">EKSAMENSTRENING</p>
-          <h2>Prøv deg på tidligere eksamener</h2>
-          <p>
-            Følg et helt sett i original rekkefølge, eller tren på én ferdighet
-            om gangen.
-          </p>
-        </div>
-        <div class="actions">
-          <a class="button" href="eksamen.html?aar=2024">Høst 2024</a
-          ><a class="button" href="eksamen.html?aar=2025">Høst 2025</a>
-        </div>
-      </section>
-    </main>
-    <footer class="shell">
-      <span><b>Visdat</b> · TDT4195 · NTNU H26</span
-      ><a href="kilder.html">Om pensum og kilder</a>
-    </footer>
-    <noscript
-      ><p>
-        Slå på JavaScript for å vise kapitler, begreper og oppgaver.
-      </p></noscript
-    >
-  </body>
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="#102e30" name="theme-color"/>
+<title>Introduction to Visual Computing · Visdat TDT4195</title>
+<link href="stil.css" rel="stylesheet"/>
+
+
+
+
+<script src="language.js"></script></head>
+<body data-page="home">
+<a class="skip" href="#innhold">Skip to content</a>
+<header class="mast">
+<div class="shell mast-inner">
+<a aria-label="Visdat, course home" class="brand" href="./"><span aria-hidden="true" class="brandmark"><i></i><i></i><i></i><i></i></span>Visdat</a><span class="brand-code">TDT4195</span>
+<nav aria-label="Main navigation">
+<a href="./#pensum">Syllabus</a><a href="eksamen.html">Exam practice</a><a href="begreper.html">Glossary</a>
+</nav>
+</div>
+</header>
+<main class="shell" id="innhold">
+<section class="hero">
+<div class="hero-copy">
+<p class="eyebrow">
+<span class="signal"></span>NTNU / AUTUMN 2026</p>
+<h1>Introduction to<br/>visual<br/><em>computing</em></h1>
+<p class="lede">From geometry to pixels, from pixels to meaning. Learn the syllabus step by step and apply the methods to exam questions.</p>
+<div class="actions">
+<a class="button primary" href="tema.html?k=transformasjoner">Start learning</a><a class="button" href="eksamen.html">Exam practice</a>
+</div>
+</div>
+<figure class="surface">
+<div class="instrument-title">
+<span>HEIGHT FIELD</span><span>z = f(x, y)</span>
+</div>
+<canvas aria-label="A height field of points and triangles. More samples reveal the terrain in greater detail." height="430" id="heightfield" role="img" width="720"></canvas>
+<figcaption>
+<label for="sampler">Sampling density</label><input id="sampler" max="44" min="8" type="range" value="30"/><output for="sampler" id="samplevalue">30 × 30</output>
+</figcaption>
+</figure>
+</section>
+<section class="curriculum" id="pensum">
+<div class="section-head">
+<div>
+<p class="eyebrow">LEARNING PATH</p>
+<h2>A syllabus in two parts</h2>
+</div>
+<p>Choose a topic or follow the chapters in order.</p>
+</div>
+<div class="tracks" id="tracks"></div>
+</section>
+<section class="exam-callout">
+<div>
+<p class="eyebrow">EXAM PRACTICE</p>
+<h2>Practise with past exams</h2>
+<p>Work through a complete paper in its original order, or practise one skill at a time.</p>
+</div>
+<div class="actions">
+<a class="button" href="eksamen.html?aar=2024">Autumn 2024</a><a class="button" href="eksamen.html?aar=2025">Autumn 2025</a>
+</div>
+</section>
+</main>
+<footer class="shell">
+<span><b>Visdat</b> · TDT4195 · NTNU H26</span><a href="kilder.html">About the syllabus and sources</a>
+</footer>
+<noscript><p>Enable JavaScript to display chapters, glossary entries and exercises.</p></noscript>
+</body>
 </html>

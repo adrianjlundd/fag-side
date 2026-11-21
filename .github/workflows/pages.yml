@@ -34,7 +34,7 @@ jobs:
           mkdir -p _site/visdat/kilder
           cp index.html _site/index.html
           cp visdat/*.html visdat/*.css visdat/*.js _site/visdat/
-          cp visdat/kilder/eksamen.json visdat/kilder/eksamensanalyse.md visdat/kilder/pensumdekning.md _site/visdat/kilder/
+          cp visdat/kilder/eksamen*.json visdat/kilder/eksamensanalyse*.md visdat/kilder/pensumdekning*.md _site/visdat/kilder/
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

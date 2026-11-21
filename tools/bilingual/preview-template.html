@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Geometric transformations · translation comparison</title>
+  <link rel="stylesheet" href="../../visdat/stil.css">
+  <style>
+    html { scroll-behavior: auto; scroll-padding-top: 100px; }
+    .preview-note { padding: 1rem; border: 1px solid var(--rule); margin-block: 1.5rem; }
+    .mast { position: sticky; top: 0; z-index: 5; background: var(--paper); }
+    .preview-content { max-width: 860px; margin-inline: auto; }
+    .preview-content section { margin-block: 2.4rem; }
+    .preview-content h2 { margin-bottom: 1.2rem; }
+    .preview-content p + p { margin-top: 1rem; }
+    .preview-content .source { margin-top: 1.2rem; }
+    .preview-content .exercise { margin-top: 1.5rem; }
+    .preview-content nav ul { display: grid; gap: .4rem; }
+    #preview-glossary dl dt { font-weight: 700; margin-top: 1rem; }
+    #preview-glossary dl dd { margin-left: 0; }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#innhold">Skip to content</a>
+  <header class="mast"><div class="shell mast-inner"><b>Visdat · TDT4195</b><div class="language-toggle" role="group" aria-label="Language"><button type="button" lang="en" aria-label="English" id="en">EN</button><button type="button" lang="nb" aria-label="Norsk bokmål" id="nb">NO</button></div></div></header>
+  <main class="shell preview-content reading" id="innhold"></main>
+  <aside class="definition" hidden aria-live="polite"><strong></strong><p></p><button type="button">×</button></aside>
+<script>
+'use strict';
+/* CHAPTER_DATA */
+let lang = 'en';
+const main = document.querySelector('main');
+const popover = document.querySelector('.definition');
+let lastTerm;
+const esc = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const word = (en,nb) => lang === 'en' ? en : nb;
+/* TRANSFORM_WIDGET */
+function hideDefinition() {
+  popover.hidden = true;
+  lastTerm?.setAttribute('aria-expanded','false');
+}
+function render(next, restore = true) {
+  const oldSection = [...main.querySelectorAll('section[id]')].filter(el => el.getBoundingClientRect().top <= 120).pop();
+  const old = { y:scrollY, id:oldSection?.id, offset:oldSection?.getBoundingClientRect().top,
+    details:[...main.querySelectorAll('details')].map(el=>el.open),
+    controls:[...main.querySelectorAll('select,input')].map(el=>el.value) };
+  lang = next;
+  document.documentElement.lang = lang;
+  const ch = data[lang];
+  document.title = ch.title + word(' · translation comparison',' · oversettelsessammenligning');
+  document.querySelector('.skip').textContent = word('Skip to content','Hopp til innhold');
+  document.querySelector('.language-toggle').setAttribute('aria-label',word('Language','Språk'));
+  for (const code of ['en','nb']) document.getElementById(code).setAttribute('aria-pressed',String(code===lang));
+  hideDefinition();
+  main.innerHTML = '<p class="preview-note">' + word(
+    'Translation comparison: this complete chapter has been translated and reviewed manually. The rest of the bilingual site is still in progress. The original Norwegian site remains available.',
+    'Oversettelsessammenligning: Hele dette kapitlet er oversatt og gjennomgått manuelt. Resten av det tospråklige nettstedet er fortsatt under arbeid. Det opprinnelige norske nettstedet er tilgjengelig.') +
+    ' <a href="../../visdat/tema.html?k=transformasjoner">' + word('Open the original chapter','Åpne det opprinnelige kapitlet')+'</a></p>'+
+    '<header class="page-head"><p class="eyebrow">Computer Graphics</p><h1>'+esc(ch.title)+'</h1><p>'+esc(ch.intro)+'</p></header>'+
+    '<nav aria-label="'+word('Chapter sections','Kapittelavsnitt')+'"><ul>'+ch.sections.map(s=>'<li><a href="#'+s.id+'">'+esc(s.title)+'</a></li>').join('')+'</ul></nav>'+
+    '<section class="focus" id="fokus"><h2>'+word('Exam focus','Eksamensfokus')+'</h2><ul>'+ch.focus.map(f=>'<li>'+esc(f)+'</li>').join('')+'</ul></section>'+
+    '<p class="page-note">'+word('Numerical convention: the examples retain the original decimal commas. Semicolons separate vector components where decimal commas are used.','Tallkonvensjon: Eksemplene beholder de opprinnelige desimalkommaene. Semikolon skiller vektorkomponenter når desimalkomma brukes.')+'</p>'+
+    ch.sections.map(s=>'<section id="'+s.id+'"><h2>'+esc(s.title)+'</h2>'+s.html+'<p class="source">'+esc(s.source)+'</p>'+references(s.id)+'</section>').join('')+
+    '<section id="eksamensoppgaver"><h2>'+word('Past exam questions','Tidligere oppgaver')+'</h2><p>'+word('Original references: exam number and PDF page are listed below. The linked practice page still uses the original Norwegian interface.','Originalreferanser: Oppgavenummer og PDF-side står nedenfor. Treningssiden det lenkes til, bruker fortsatt det opprinnelige norske grensesnittet.')+'</p>'+references()+'</section>'+
+    '<section class="exercise" id="prov"><p class="eyebrow">'+word('NEW PRACTICE EXERCISE','NY TRENINGSOPPGAVE')+'</p><h2>'+word('Try it yourself','Prøv selv')+'</h2><p>'+esc(ch.question)+'</p><details><summary>Hint</summary><p>'+esc(ch.hint)+'</p></details><details><summary>'+word('Show answer','Se svar')+'</summary><p><b>'+word('Our proposed solution','Eget løsningsforslag')+'</b></p><p>'+esc(ch.answer)+'</p></details></section>'+
+    '<section id="preview-glossary"><h2>'+word('Chapter glossary','Begreper i kapitlet')+'</h2><dl>'+Object.entries(ch.terms).map(([term,definition])=>'<dt>'+esc(term)+'</dt><dd>'+esc(definition)+'</dd>').join('')+'</dl></section>';
+  main.querySelectorAll('[data-demo="transformasjon"]').forEach(widget => {widget.classList.add('widget');transform(widget);});
+  main.querySelectorAll('dfn').forEach(term => {
+    const label = term.textContent;
+    const definition = ch.terms[label];
+    if (!definition) throw Error('Missing definition: '+label);
+    const button = document.createElement('button');
+    button.className = 'term'; button.type = 'button'; button.textContent = label;
+    button.setAttribute('aria-expanded','false');
+    button.onclick = () => {
+      const close = lastTerm===button && !popover.hidden;
+      hideDefinition(); if (close) return;
+      lastTerm = button;
+      popover.querySelector('strong').textContent = label;
+      popover.querySelector('p').textContent = definition;
+      button.setAttribute('aria-expanded','true'); popover.hidden = false;
+    };
+    term.replaceWith(button);
+  });
+  popover.querySelector('button').setAttribute('aria-label',word('Close definition','Lukk definisjon'));
+  if (restore) {
+    main.querySelectorAll('select,input').forEach((el,i)=>{if(old.controls[i]!==undefined){el.value=old.controls[i];el.dispatchEvent(new Event('input',{bubbles:true}));}});
+    main.querySelectorAll('details').forEach((el,i)=>{el.open=old.details[i]||false;});
+    const section = old.id && document.getElementById(old.id);
+    requestAnimationFrame(()=>window.scrollTo({top:section ? scrollY+section.getBoundingClientRect().top-old.offset : old.y,behavior:'instant'}));
+  }
+}
+function references(anchor) {
+  const rows = data.refs.filter(row=>!anchor||row.anker===anchor);
+  if (!rows.length) return '';
+  return '<details><summary>'+word('Practise with past exam questions','Tren med tidligere eksamensoppgaver')+' ('+rows.length+')</summary><ul>'+rows.map(row=>'<li><a href="../../visdat/eksamen.html?aar='+row.aar+'&amp;id='+row.id+'">'+row.id+'</a> · '+esc(row[lang])+'<p class="source">'+esc(row[lang==='en'?'sourceEn':'sourceNb'])+'</p></li>').join('')+'</ul></details>';
+}
+for (const code of ['en','nb']) document.getElementById(code).onclick = () => render(code);
+popover.querySelector('button').onclick = () => {hideDefinition();lastTerm?.focus();};
+document.addEventListener('keydown',event=>{if(event.key==='Escape'){hideDefinition();lastTerm?.focus();}});
+render('en',false);
+if(location.hash) document.getElementById(decodeURIComponent(location.hash.slice(1)))?.scrollIntoView();
+</script>
+</body>
+</html>

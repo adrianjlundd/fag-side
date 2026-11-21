@@ -1,0 +1,47 @@
+{
+  "slug": "intensitet",
+  "title": "From light to histograms",
+  "intro": "A digital greyscale image is a grid of measurements. You can change its appearance by assigning a new intensity to each measured value.",
+  "focus": [
+    "Explain image formation in the eye and a pinhole camera.",
+    "Calculate a histogram, cumulative distribution and equalised image from pixel values.",
+    "Draw an intensity mapping and predict its effect on light and dark regions."
+  ],
+  "terms": {
+    "sampling": "Measuring a continuous signal at selected positions, for example on a grid.",
+    "quantisation": "Assigning a measured value to one of a finite number of levels.",
+    "histogram": "The number of pixels at each intensity level.",
+    "cumulative distribution": "The proportion of pixels with intensity less than or equal to a given level.",
+    "disparity": "The difference in image position of the same scene point in two camera images."
+  },
+  "sections": [
+    {
+      "id": "bildedannelse",
+      "title": "Image planes, depth and pixels",
+      "source": "L1-T0-b_Intro, PDF p. 4–8 and 12–36. Gonzalez and Woods (DIP4e), ch. 2.1–2.4, p. 48–80.",
+      "html": "\n<p>In the retina, rods respond well to small amounts of light. Cones provide colour vision and are densely packed around the fovea. In a pinhole camera, a ray through the aperture determines where a scene point is imaged. With a virtual image plane in front of the camera, similar triangles give <math><mi>x</mi><mo>=</mo><mfrac><mrow><mi>f</mi><mi>X</mi></mrow><mrow><mi>Z</mi></mrow></mfrac></math> and <math><mi>y</mi><mo>=</mo><mfrac><mrow><mi>f</mi><mi>Y</mi></mrow><mrow><mi>Z</mi></mrow></mfrac></math>. A physical image plane behind the aperture produces an inverted image.</p>\n<p>A point 0,4 m to the right of the optical axis and 2 m in front of the camera has x = 10 mm · 0,4/2 = 2 mm with focal length 10 mm. Several points on the same ray give the same x and y. Two parallel, rectified cameras with baseline B can recover depth from <dfn>disparity</dfn> d. With f = 200 pixels, B = 0,1 m and d = 10 pixels, Z = fB/d = 2 m.</p>\n<p>A smaller aperture admits less light. In the geometric pinhole model, it concentrates rays from one point into a smaller spot on the image plane. Spatial resolution describes how closely spaced details the system can distinguish. Optics and spacing between measurement locations affect this limit.</p>\n<p><dfn>Sampling</dfn> determines where we measure. <dfn>Quantisation</dfn> determines which values can be stored. A 4 × 3 greyscale image with 2 bits per pixel contains 12 measurements with 4 possible levels. The pixel data occupy 24 bits without packing overhead.</p>\n<p>Sampling chooses the measurement density on the sensor surface. Quantisation chooses the values used to store each measurement. More bits can distinguish smaller intensity differences but cannot recover a pattern that was never sampled densely enough.</p>\n<details class=\"sjekk\"><summary>Basic practice · What is quantised in a greyscale image?</summary><p>Distinguish measurement position from measured value.</p><details><summary>Show answer</summary><p>The pixel intensity is assigned to one of a finite number of levels. Sampling determines which positions are measured.</p></details></details>\n<div class=\"exercise\"><strong>Application · our practice exercise</strong><p>You have space for 8192 bits. Compare 32 × 32 pixels at 8 bits with 64 × 32 pixels at 4 bits. Which is better for closely spaced vertical stripes with just two known grey levels?</p>\n<details><summary>Hint</summary><p>Consider the number of columns and the number of intensity levels separately.</p></details>\n<details><summary>Show answer</summary><p>Both use 8192 bits. The second choice provides twice as many samples across the stripes and 16 levels, enough for two well-separated tones. For a smooth grey ramp, 256 levels may matter more. The optics must also resolve the stripes.</p></details></div>"
+    },
+    {
+      "id": "punktoperator",
+      "title": "Reading a curve from input to output",
+      "source": "L1-T1-a_Spatial-Intuition, PDF p. 8–21. L1-T1-b_Spatial-IntensityTransf, PDF p. 2–7. DIP4e, ch. 3.2.",
+      "html": "\n<p>A point operator s = T(r) changes each pixel using only its own value. Read the input on the horizontal axis. A curve above the diagonal makes that level brighter. Where the curve is steep, the separation between nearby levels increases. Flat intervals lose contrast.</p>\n<p>Use normalised levels 0 ≤ r ≤ 1 and the gamma curve s = r<sup>γ</sup>. For r = 0,25, γ = ½ gives 0,5. With γ = 2, the result is 0,0625. The negative s = 1 − r swaps light and dark. A piecewise-linear curve can stretch a narrow interval, whereas clipping to 0 or 1 makes different inputs identical.</p>\n<p>For a power law on normalised values, <math><mi>s</mi><mo>=</mo><msup><mrow><mi>r</mi></mrow><mrow><mi>γ</mi></mrow></msup></math>. The endpoints 0 and 1 remain fixed when γ &gt; 0. For 0 &lt; r &lt; 1, a smaller exponent gives a larger result. Normalise before applying the curve and scale back afterwards.</p>\n<details class=\"sjekk\"><summary>Basic practice · Does a point operator need neighbouring values?</summary><p>Write s = T(r).</p><details><summary>Show answer</summary><p>No. Given the same function T, two pixels with the same r always produce the same s.</p></details></details>\n<div class=\"exercise\"><strong>Application · our practice exercise</strong><p>An 8-bit image has pixel value 64. Apply γ = ½ with maximum value 255. What do you obtain after rounding, and why?</p>\n<details><summary>Hint</summary><p>Write the operation as 255·√(64/255).</p></details>\n<details><summary>Show answer</summary><p>(64/255) ≈ 0,251. Its square root is about 0,501. Multiply by 255 and round to 128. Dark values become brighter. Taking the square root of 64 directly would give 8 with the wrong scale.</p></details></div>"
+    },
+    {
+      "id": "histogram",
+      "title": "Equalising a small image by hand",
+      "source": "L1-T1-a_Spatial-Intuition, PDF p. 22–32. L1-T1-b_Spatial-IntensityTransf, PDF p. 23–29. DIP4e, ch. 3.3, p. 133–153.",
+      "html": "\n<p>A <dfn>histogram</dfn> counts levels without preserving pixel locations. Two images with rearranged pixels have the same histogram. Divide count h(r) by pixel count N to obtain p(r). Sum p from 0 through r, inclusive, to obtain the <dfn>cumulative distribution</dfn> F(r).</p>\n<p>Use L = 4 levels and h = [1, 4, 2, 1] with N = 8. Cumulative counts are [1, 5, 7, 8], so F = [⅛, ⅝, ⅞, 1]. With T(r) = round((L − 1)F(r)), round([0,375, 1,875, 2,625, 3]) = [0, 2, 3, 3]. Thus a pixel at level 1 becomes 2.</p>\n<p>Recount through the mapping. The new histogram is [1, 0, 4, 3]. The two highest input levels share output level 3. Discrete equalisation can therefore leave empty levels. Here we use the nearest integer and the entire distribution function. Follow the rounding rule specified in the problem.</p>\n<aside class=\"worked-example\" lang=\"en\"><h3>Build an equalization map</h3><p>Use four levels and counts [1, 1, 2, 4]. Divide cumulative counts by eight to obtain the cumulative probabilities. In this example, multiply by L − 1 and round to nearest, with halves rounded upward.</p>\n<div class=\"calculation\">CDF = [⅛, ¼, ½, 1]   ⇒   mapped levels = [0, 1, 2, 3]</div><p>Did equalization force equal counts in the output bins?</p><details><summary>Check your reasoning</summary><p>No. Each discrete level maps back to itself here. A deterministic lookup table moves all pixels of one input level together, so it cannot divide a large bin among multiple output levels.</p></details></aside>\n<p>Histogram equalisation can also predict the entire output histogram. Calculate the lookup table once, then move every count from each input value to its output value. Two different input levels may land in the same bin.</p>\n<details class=\"sjekk\"><summary>Basic practice · What is the sum of a normalised histogram?</summary><p>Each pixel is counted once.</p><details><summary>Show answer</summary><p>The counts sum to the number of pixels. After division by that number, the proportions sum to 1.</p></details></details>\n<div class=\"exercise\"><strong>Application · our practice exercise</strong><p>Four levels have counts [1,1,6,0]. Use the floor of 3 times the cumulative proportion. Find the output histogram.</p>\n<details><summary>Hint</summary><p>Cumulative counts are 1, 2, 8 and 8. The divisor is 8.</p></details>\n<details><summary>Show answer</summary><p>The mapping is [0,0,3,3]. The first two counts sum to 2 at level 0. Level 3 receives 6. The output histogram is [2,0,0,6], with the same total pixel count.</p></details></div>"
+    }
+  ],
+  "question": "An image has levels 0 through 3, with four pixels at level 0, two at level 1 and two at level 3. What is the output histogram after equalisation? Round halfway values upwards.",
+  "hint": "Build a lookup table by multiplying each cumulative count by 3/8 before rounding.",
+  "answer": "Cumulative counts are [4, 6, 6, 8]. Multiply by 3/8 and round [1,5, 2,25, 2,25, 3] to [2, 2, 2, 3]. Six pixels end up at level 2 and two at level 3. The histogram entries are [0, 0, 6, 2].",
+  "termAliases": {
+    "sampling": "sampling",
+    "kvantisering": "quantisation",
+    "histogram": "histogram",
+    "kumulativ fordeling": "cumulative distribution",
+    "disparitet": "disparity"
+  }
+}

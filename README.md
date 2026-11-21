@@ -2,6 +2,39 @@
 
 Studieside for Grunnleggende visuell databehandling ved NTNU, høsten 2026. De 15 kapitlene knytter sammen forklaringer, regneeksempler, figurer og eksamenstrening. Årgangene H24 og H25 har til sammen 55 fagoppgaver fordelt på 134 oppføringer i studieregisteret.
 
+## Engelsk og norsk · 21. november 2026
+
+Hele nettstedet er manuelt oversatt og gjennomgått: 15 kapitler med 73 avsnitt,
+134 eksamensoppføringer, 49 begreper, figurer, skjulte svar, navigasjon,
+tilgjengelighetstekster, pensumkart og eksamensanalyse. Engelsk er standard ved
+første besøk. **EN | NO** bytter språk på samme side og lagrer valget i
+`localStorage` som `visdat.language`. Språkene bruker henholdsvis `lang="en"`
+og `lang="nb"`. Oppgave-ID-er, emneslugger og ankre er felles. Åpne svar,
+figurvalg og leseposisjon beholdes. Begrepssøket viser aktivt språk og kan
+finne tilsvarende begrep fra begge språk.
+
+Opprinnelig `cg.js`, `ip.js` og `kilder/eksamen.json` er bevart. Aktive
+språkdata ligger separat i `.en.js`, `.nb.js` og `kilder/eksamen.en.json`.
+Norsk utgave har også fått norske versjoner av de tidligere engelske
+tilleggseksemplene. Ingen leksjoner er forkortet. Tall og matematiske tegn er
+kontrollert mot originalen. MathML-strukturen er bevart, med oversettelse av
+tekstetikettene foran/bak og inn/ut i engelsk utgave. Tallnotasjonen forklares
+i kapitlene. Kildedokumentene åpnes i `dokument.html` med språkvelger; de
+opprinnelige Markdown- og JSON-adressene og engelske `.en`-filer kan lastes ned.
+
+Manuelle oversettelseskilder og kontroller ligger i `tools/bilingual/`, utenfor
+publiseringsartefakten. De bruker ikke de private, uverifiserte modellutkastene
+fra den avbrutte prøvekjøringen. Nettstedet bruker ingen oversettelsestjeneste
+eller modell ved kjøring. Ingen kjente tekstlige oversettelseshull gjenstår.
+Kildehull og fasitavvik nedenfor er uendret og merkes i begge språk.
+
+Kontrollert over HTTP under `/fag-side/`: alle 134 oppgave-ID-er i begge språk,
+alle kapitler i begge språk ved 1280, 375 og 320 piksler, MathML, skjulte svar
+med tastatur, popover/Escape, søk ved språkbytte, figurregning, treningsvarianter,
+returlenker, nettleserhistorikk og begge kildedokumenter. Alle 26 offentlige
+filer svarte 200; seks private stier svarte 404. Publiseringslisten omfatter
+begge språk. Ingenting er committet, pushet eller publisert.
+
 ## Åpne siden
 
 Kjør dette fra repo-roten i PowerShell. Forhåndsvisningen bruker Python-standardbiblioteket.
@@ -10,7 +43,7 @@ Kjør dette fra repo-roten i PowerShell. Forhåndsvisningen bruker Python-standa
 python tools/forhandsvis.py
 ```
 
-Åpne [fagforsiden på den lokale serveren](http://127.0.0.1:8195/fag-side/visdat/). Serveren lytter på loopback og leverer rotens inngangsfil og de offentlige sidene under `visdat/`. Avslutt med Ctrl+C. Nettstedet kjører uten byggesteg, eksterne skript eller nettfonter.
+Åpne [fagforsiden på den lokale serveren](http://127.0.0.1:8195/fag-side/visdat/). Serveren lytter på loopback og leverer rotens inngangsfil og de offentlige sidene under `visdat/`. Bruk eventuelt `--port 8197` hvis standardporten er opptatt. Avslutt med Ctrl+C. Nettstedet kjører uten byggesteg, eksterne skript eller nettfonter.
 
 På GitHub Pages er prosjektstien `/fag-side/`. Ved eventuell artefaktpublisering skal rotens `index.html` og mappen `visdat/` inngå. Ved Jekyll-publisering fra gren angir `_config.yml` unntakene for privat materiale. Den eksisterende Git-regelen for `kildemateriale/` og de nye reglene for lokale grafresultater beskytter arbeidskopien.
 
@@ -30,7 +63,7 @@ denne stien.
 
 ## Læringssti og eksamensbelegg
 
-De 15 kapitlene har 73 leksjonsavsnitt. Hvert avsnitt kombinerer en forklart metode med grunnøving og en selvstendig anvendelse med skjult løsning. Prøv først uten hint, og bruk deretter mellomregningen til å finne det første steget der din løsning avviker. Hvert kapittel har også et regneeksempel på engelsk. Matematiske uttrykk som matriser, summer og brøker vises med nettleserens innebygde MathML.
+De 15 kapitlene har 73 leksjonsavsnitt i begge språk. Hvert avsnitt kombinerer en forklart metode med grunnøving og en selvstendig anvendelse med skjult løsning. Prøv først uten hint, og bruk deretter mellomregningen til å finne det første steget der din løsning avviker. Hvert kapittel har også et ekstra regneeksempel, oversatt til begge språk. Matematiske uttrykk som matriser, summer og brøker vises med nettleserens innebygde MathML.
 
 [Pensumkartet](visdat/kilder/pensumdekning.md) knytter ferdighetene til avsnitt og kildesider. Her står også hvilke praktiske læringsmål som krever laboratoriearbeid, og hvilke forelesninger som mangler eget kildemateriale.
 

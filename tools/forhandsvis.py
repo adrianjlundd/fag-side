@@ -10,7 +10,7 @@ PREFIX = "/fag-side/"
 class Studieside(SimpleHTTPRequestHandler):
     def public_path(self):
         path = unquote(urlsplit(self.path).path)
-        if path == PREFIX:
+        if path in {PREFIX, PREFIX + "index.html"}:
             return ROOT / "index.html"
         if not path.startswith(PREFIX + "visdat/"):
             return None
@@ -34,6 +34,10 @@ class Studieside(SimpleHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    print("Studiesiden kjører på http://127.0.0.1:8195/fag-side/visdat/", flush=True)
-    ThreadingHTTPServer(("127.0.0.1", 8195), Studieside).serve_forever()
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--port', type=int, default=8195)
+    options = parser.parse_args()
+    print(f"Studiesiden kjører på http://127.0.0.1:{options.port}/fag-side/visdat/", flush=True)
+    ThreadingHTTPServer(("127.0.0.1", options.port), Studieside).serve_forever()
 

@@ -1,5 +1,8 @@
 (() => {
   "use strict";
+  let ready;
+  window.visdatPageReady = new Promise(resolve => { ready = resolve; });
+  let contentReady = Promise.resolve();
   const cg = window.CG || [],
     ip = window.IP || [];
   const chapters = [...cg, ...ip];
@@ -12,7 +15,8 @@
   for (const ch of chapters) {
     for (const [word, definition] of Object.entries(ch.terms || {})) {
       const key = word.toLocaleLowerCase("nb");
-      if (!glossary.has(key)) glossary.set(key, { word, definition, ch });
+      const aliases = Object.entries(ch.termAliases || {}).filter(([, label]) => label === word).map(([original]) => original);
+      if (!glossary.has(key)) glossary.set(key, { word, definition, ch, aliases });
     }
   }
   function escape(value) {
@@ -184,6 +188,7 @@
       '<div class="layout"><div class="reading"><section id="fokus" class="focus"><h2>Eksamensfokus</h2><ul>' +
       ch.focus.map((f) => "<li>" + escape(f) + "</li>").join("") +
       "</ul>" + preparation + "</section>" +
+      '<p class="page-note">Tallnotasjon: Eksemplene beholder originalenes desimalkomma og semikolon mellom komponenter. Noen tilleggseksempler bruker desimalpunkt.</p>' +
       sections +
       '<section id="eksamensoppgaver"><h2>Tidligere oppgaver</h2><div id="exam-refs" aria-live="polite">Henter oppgavereferanser …</div></section>' +
       '<section class="exercise" id="prov"><p class="eyebrow">NY TRENINGSOPPGAVE</p><h2>Prøv selv</h2><div>' +
@@ -220,7 +225,7 @@
       '</ul><div id="return"></div></aside></div>';
     wireTerms(ch);
     const refs = document.querySelector("#exam-refs");
-    loadExam()
+    contentReady = loadExam()
       .then((rows) => {
         const selected = rows.filter((row) => row.kapittel === ch.slug);
         for (const section of ch.sections) {
@@ -267,7 +272,7 @@
     if (location.hash)
       document
         .getElementById(decodeURIComponent(location.hash.slice(1)))
-        ?.scrollIntoView();
+        ?.scrollIntoView({behavior: "instant", block: "start"});
   }
   function wireTerms(ch) {
     let lastButton;
@@ -299,7 +304,8 @@
         hide(false);
     });
     document.querySelectorAll("dfn").forEach((term) => {
-      const word = term.dataset.term || term.textContent.trim();
+      const originalWord = term.dataset.term || term.textContent.trim();
+      const word = ch.termAliases?.[originalWord] || originalWord;
       const def =
         ch.terms[word] ||
         glossary.get(word.toLocaleLowerCase("nb"))?.definition;
@@ -340,7 +346,7 @@
         .value.toLocaleLowerCase("nb")
         .trim();
       const matches = entries.filter((e) =>
-        (e.word + " " + e.definition).toLocaleLowerCase("nb").includes(query),
+        (e.word + " " + e.definition + " " + e.aliases.join(" ")).toLocaleLowerCase("nb").includes(query),
       );
       document.querySelector("#entries").innerHTML =
         matches
@@ -554,7 +560,73 @@
       source(
         "lecture_plan_IP.txt · «Link between lecture slides and the relevant books»",
       ) +
-      '<h2>Grunnlaget for oppgavene</h2><p>Årgangene 2024 og 2025 har hver en NoAnswers-fil og en svarfil. Kildene er angitt med PDF-side og oppgavenummer i treningen. Egne oppgaver bruker nye tall og egne forklaringer. Vektingen av temaer for H26 er en faglig vurdering.</p><ul><li><a href="kilder/eksamensanalyse.md">Les eksamensanalysen (Markdown)</a></li><li><a href="kilder/pensumdekning.md">Pensumdekning og læringsmål (Markdown)</a></li><li><a href="kilder/eksamen.json">Åpne oppgaveregisteret (JSON)</a></li></ul></div>';
+      '<h2>Grunnlaget for oppgavene</h2><p>Årgangene 2024 og 2025 har hver en NoAnswers-fil og en svarfil. Kildene er angitt med PDF-side og oppgavenummer i treningen. Egne oppgaver bruker nye tall og egne forklaringer. Vektingen av temaer for H26 er en faglig vurdering.</p><ul><li><a href="dokument.html?d=eksamensanalyse">Les eksamensanalysen</a></li><li><a href="dokument.html?d=pensumdekning">Pensumdekning og læringsmål</a></li><li><a href="kilder/eksamen.json">Åpne oppgaveregisteret (JSON)</a></li></ul></div>';
+  }
+  // The two public source documents share the site's language control. Their
+  // raw Markdown files remain available as downloads with their original URLs.
+  function renderMarkdown(markdown) {
+    function inline(value) {
+      const tokens = [];
+      const protectedText = value.replace(/`([^`]+)`|\[([^\]]+)\]\(([^)]+)\)/g, (match, code, label, target) => {
+        let href = target;
+        if (target && !/^https?:/.test(target)) {
+          const documentLink = target.match(/^(eksamensanalyse|pensumdekning)(?:\.en)?\.md$/);
+          href = documentLink ? url('dokument.html', {d: documentLink[1]})
+            : target.startsWith('../') ? target.slice(3) : 'kilder/' + target;
+        }
+        const content = code !== undefined ? '<code>' + escape(code) + '</code>'
+          : /^(?:https?:|\.\.?\/|[\w-]+\.)/.test(target)
+            ? '<a href="' + escape(href) + '">' + escape(label) + '</a>' : escape(label);
+        tokens.push(content);
+        return '\u0001' + (tokens.length - 1) + '\u0002';
+      });
+      return escape(protectedText).replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+        .replace(/\u0001(\d+)\u0002/g, (_, index) => tokens[index]);
+    }
+    const lines = markdown.split(/\r?\n/);
+    let output = '', heading = 0;
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line) continue;
+      const title = line.match(/^(#{1,3}) (.*)$/);
+      if (title) {
+        output += '<h' + title[1].length + ' id="doc-section-' + heading++ + '">' + inline(title[2]) + '</h' + title[1].length + '>';
+      } else if (line.startsWith('|')) {
+        const rows = [];
+        while (i < lines.length && lines[i].trim().startsWith('|')) rows.push(lines[i++].trim());
+        i--;
+        output += '<div class="table-scroll" tabindex="0" role="region" aria-label="Kildetabell"><table>';
+        rows.forEach((row, index) => {
+          if (/^\|[\s:|-]+\|$/.test(row)) return;
+          const tag = index === 0 ? 'th' : 'td';
+          output += '<tr>' + row.slice(1,-1).split('|').map(cell => '<' + tag + (tag === 'th' ? ' scope="col"' : '') + '>' + inline(cell.trim()) + '</' + tag + '>').join('') + '</tr>';
+        });
+        output += '</table></div>';
+      } else if (line.startsWith('- ')) {
+        output += '<ul>';
+        while (i < lines.length && lines[i].trim().startsWith('- ')) output += '<li>' + inline(lines[i++].trim().slice(2)) + '</li>';
+        i--; output += '</ul>';
+      } else {
+        let paragraph = line;
+        while (i+1 < lines.length && lines[i+1].trim() && !/^(?:#|\||- )/.test(lines[i+1].trim())) paragraph += ' ' + lines[++i].trim();
+        output += '<p>' + inline(paragraph) + '</p>';
+      }
+    }
+    return output;
+  }
+  async function showDocument() {
+    const slug = params.get('d');
+    if (!['eksamensanalyse','pensumdekning'].includes(slug)) {
+      view.innerHTML = crumbs('Kilder') + '<p>Ukjent kildedokument.</p>';
+      return;
+    }
+    const filename = 'kilder/' + slug + '.md';
+    const response = await fetch(filename);
+    if (!response.ok) throw Error('HTTP ' + response.status);
+    const content = await response.text();
+    view.innerHTML = crumbs('Kilder') + '<p><a href="' + filename + '">Last ned Markdown</a></p><article class="source-document">' + renderMarkdown(content) + '</article>';
+    document.title = view.querySelector('h1').textContent + ' · Visdat TDT4195';
+    scrollToHash();
   }
   if (page === "home")
     document.querySelector("#tracks").innerHTML =
@@ -573,8 +645,9 @@
   if (page === "chapter") showChapter();
   if (page === "glossary") showGlossary();
   if (page === "sources") showSources();
+  if (page === "source-document") contentReady = showDocument().catch(() => examError(view));
   if (page === "practice")
-    loadExam()
+    contentReady = loadExam()
       .then(showPractice)
       .catch(() => examError(view));
   const active = {
@@ -588,4 +661,5 @@
       a.setAttribute("aria-current", "page");
   });
   window.visdatFigures();
+  contentReady.finally(ready);
 })();
